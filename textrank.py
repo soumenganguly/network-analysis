@@ -11,29 +11,33 @@ import operator
 import sys
 import nltk
 
-url = sys.argv[1]
-article = Article(url)
+def extract_news_article(url):
+    article = Article(url)
 
-article.download()
-article.parse()
+    article.download()
+    article.parse()
 
-title = article.title
-text = article.text
+    title = article.title
+    text = article.text.encode('utf8')
+    return text, title
 
-tokenizer = PunktWordTokenizer()
-sentences = sent_tokenize(text)
-words = []
-refined_words = []
-for sentence in sentences:
-    word = tokenizer.tokenize(sentence)
-    for i in word:
-        words.append(i.lower())
+def tokenize(t):
+    tokenizer = PunktWordTokenizer()
+    sentences = sent_tokenize(t)
+    words = []
+    refined_words = []
+    for sentence in sentences:
+        word = tokenizer.tokenize(sentence)
+        for i in word:
+            words.append(i.lower())
         
 #Removal of stopwords and punctuations
-for word in words:
-    if word not in stopwords.words('english') and word not in punctuation:
-        refined_words.append(word)
-
+    stopwords = open('stop-words-it-en.txt','r').read().split('\r\n')
+    for word in words:
+        if word not in stopwords and word not in punctuation:
+            refined_words.append(word)
+    return refined_words
+    
 #Stemming and lemmatization
 
 #Tagging and extracting important keyword for graph computation(TextRank)
@@ -75,3 +79,10 @@ def textrank(wordlist):
             keyphrases[' '.join(kp_word)] = avg_pagerank
             j = i + len(kp_word)
     return sorted(keyphrases.iteritems(), key=operator.itemgetter(1), reverse=True)
+    
+if __name__ == '__main__':
+    article_text, article_title =  extract_news_article(sys.argv[1]) 
+    w = tokenize(article_text)
+    kp = textrank(w)
+    for i in kp:
+        print i[0]
