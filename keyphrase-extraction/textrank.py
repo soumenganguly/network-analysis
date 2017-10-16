@@ -32,9 +32,9 @@ def tokenize(t):
             words.append(i.lower())
         
 #Removal of stopwords and punctuations
-    stopwords = open('stop-words-it-en.txt','r').read().split('\r\n')
+    #stopwords = open('stop-words-it-en.txt','r').read().split('\r\n')
     for word in words:
-        if word not in stopwords and word not in punctuation:
+        if word not in stopwords.words('french') and word not in punctuation:
             refined_words.append(word)
     return refined_words
     
