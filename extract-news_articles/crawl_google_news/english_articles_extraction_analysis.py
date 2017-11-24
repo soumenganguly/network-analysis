@@ -27,9 +27,9 @@ st = NERTagger('/home/soumen/Downloads/stanford-ner-2017-06-09/classifiers/engli
 
 tags = ['ORGANIZATION', 'PERSON', 'LOCATION', 'MISC']
 
-client = MongoClient()
+#client = MongoClient()
 
-db = client['english_articles_analysis']
+#db = client['english_articles_analysis']
 
 
 
@@ -47,7 +47,7 @@ input_file_read = input_file.read()
 input_file_data = input_file_read.split('\n')
 input_file_data.pop(-1)
 
-output_file = open("english_articles_analysis_results.json","wb")
+output_file = open("english_articles_analysis_results_refined_ne.json","wb")
 
 
 
@@ -147,15 +147,16 @@ Extract all the NAMED ENTITIES from an article.
 '''
 
 def extract_named_entities(text):
-	named_entities = []
-	for entity in st.tag(text.split()):
-		if entity[1] in tags:
-			named_entities.append(entity[0])
-		else:
-			pass
-	return named_entities
+    named_entities = []
+    sents = sent_tokenize(text)
+    for sentences in sents:
+        for entity in st.tag(sentences.split()):
+            if entity[1] in tags and entity[0] not in named_entities:
+                named_entities.append(entity[0])
+            else:
+                pass
+    return named_entities
 
-	
 
 if __name__ == "__main__":
     count = 0
@@ -177,7 +178,6 @@ if __name__ == "__main__":
 
 	tokens = tokenize(title+' '+text)
 
-	signal.alarm(20)
 	try:
 	    # Collect top-10 keywords
 	    print "Extracting top-10 keywords.."
@@ -201,8 +201,6 @@ if __name__ == "__main__":
 		
 	except TimeoutException:
 	    error_url_files.write(url+'\n')
-	else:
-	    signal.alarm(0)
     	count+=1
    	print "%d of %d"%(count,len(input_file_data))
     json.dump(article_dict, output_file)
