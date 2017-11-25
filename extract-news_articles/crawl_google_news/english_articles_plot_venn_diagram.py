@@ -15,10 +15,10 @@ for article in data:
     named_entities = []
     for words in article['keywords']:
         keywords.append(words[0])
-    for words in data[0]['keyphrases']:
+    for words in article['keyphrases']:
         for k in words[0].split():
             keyphrases.append(k)
-    for words in data[0]['names_entities']:
+    for words in article['names_entities']:
         named_entities.append(words.lower())
     
     keywords_set = set(keywords)
