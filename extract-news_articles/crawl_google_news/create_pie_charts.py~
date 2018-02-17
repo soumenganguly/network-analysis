@@ -1,0 +1,42 @@
+from matplotlib import pyplot as plt
+from matplotlib_venn import venn2
+import json
+from matplotlib.backends.backend_pdf import PdfPages
+
+a = open('english_articles_analysis_results_refined_ne.json','r').read()
+data = json.loads(a)
+
+
+keywords_in_keyphrases = []
+named_entities_in_keywords = []
+named_entities_in_keyphrases = []
+
+for article in data:
+    keywords = []
+    keyphrases = []
+    named_entities = []
+    for words in article['keywords']:
+        keywords.append(words[0])
+    for words in article['keyphrases']:
+        for k in words[0].split():
+            keyphrases.append(k)
+    for words in article['names_entities']:
+        named_entities.append(words.lower())
+
+    keywords_set = set(keywords)
+    keyphrases_set = set(keyphrases)
+    named_entities_set = set(named_entities)
+
+    print "Article:"+article['url']
+    
+    keywords_in_keyphrases.append(len(keywords_set.intersection(keyphrases_set))*10)
+    named_entities_in_keywords.append(len(keywords_set.intersection(named_entities_set))*10)
+    named_entities_in_keyphrases.append(len(keyphrases_set.intersection(named_entities_set))*10)
+
+count_scores_keywords_in_keyphrases = []
+count_scores_named_entities_in_keywords = []
+count_scores_named_entities_in_keyphrases = []
+percentages = range(0,110,10)
+for value in percentages:
+    count_scores.append(keywords_in_keyphrases.count(value))
+    
